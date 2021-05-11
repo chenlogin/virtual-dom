@@ -116,6 +116,7 @@ var config = {
     ],
 }
 
+//Along with exporting a single configuration as an object, function or Promise, you can export multiple configurations
 module.exports = function(){
     return inquirer.prompt(promptList).then(res => {
 
