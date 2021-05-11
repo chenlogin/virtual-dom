@@ -2,12 +2,23 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const inquirer = require('inquirer');//用户与命令行交互的工具
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");//Speed Measure Plugin
+const pkg = require(path.resolve(__dirname, '../package.json'));
 
 var ROOT_PATH = path.resolve(__dirname, '../');
 var SRC_PATH = path.resolve(ROOT_PATH, 'src');
 var DIST_PATH = path.resolve(ROOT_PATH, 'dist');
 
-const pkg = require( path.resolve(ROOT_PATH, 'package.json'));
+const promptList = [{
+    type: 'rawlist',
+    name: 'ENV',
+    message: '请选择打包环境',
+    choices: ['dev','test','staging','prod'],
+    filter: function(val){ 
+        return val;
+    }
+}];
 
 var config = {
 
@@ -105,10 +116,17 @@ var config = {
     ],
 }
 
-//DefinePlugin 允许在 编译时 创建配置的全局常量，区分开发模式与生产模式进行不同的操作时非常有用。
-config.plugins.push(new webpack.DefinePlugin({
-    APP_VERSION: `${pkg.version || '0.0.0'}`,
-    NODE_ENV: JSON.stringify(process.env.NODE_ENV || "dev")
-}));
+module.exports = function(){
+    return inquirer.prompt(promptList).then(res => {
 
-module.exports = config;
+        //DefinePlugin 允许在 编译时 创建配置的全局常量，区分开发模式与生产模式进行不同的操作时非常有用。
+        config.plugins.push(new webpack.DefinePlugin({
+            APP_VERSION: `${pkg.version || '0.0.0'}`,
+            NODE_ENV: JSON.stringify(res.ENV || process.env.NODE_ENV )
+        }));
+
+        return new SpeedMeasurePlugin().wrap(
+            config
+        )
+    });
+};
