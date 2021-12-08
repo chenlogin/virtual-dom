@@ -10,6 +10,7 @@ const RealDom = VdObj1.render();
 const renderDom = function(element,target){
     target.appendChild(element)
 }
+
 export default function start(){
    renderDom(RealDom,document.body)
 }

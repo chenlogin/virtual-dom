@@ -1,9 +1,5 @@
-import { Element } from './element';
-
-//declare APP_VERSION;
-function newElement(tag,attr,child){//创建函数对象
-    return new Element(tag,attr,child)
-}
+import { newElement } from './element';
+import { diff, fixPlace } from './diff';
 
 const VdObj = newElement('ul',{id: 'list'},[
     newElement('li',{class:'list-1',style:'color:red'},['lavie']),
@@ -12,4 +8,24 @@ const VdObj = newElement('ul',{id: 'list'},[
     newElement('li',{class:'list-4'},['Vue']),
 ]);
 
-console.log(VdObj);
+const VdObj2 = newElement('ul',{id: 'list'},[
+    newElement('li',{class:'tag-1',style:'color:green'},['text1']),
+    newElement('li',{class:'tag-2'},['text2']),
+    newElement('li',{class:'tag-3'},['text3']),
+]);
+
+const RealDom = VdObj.render();
+
+const renderDom = function(element,target){
+    target.appendChild(element)
+}
+
+function start(){
+    renderDom(RealDom,document.body)
+    setTimeout(() => {
+        const diffs = diff(VdObj,VdObj2)
+        fixPlace(RealDom,diffs)
+    },2000) 
+}
+
+start()

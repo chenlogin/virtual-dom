@@ -122,7 +122,7 @@ module.exports = function(){
 
         //DefinePlugin 允许在 编译时 创建配置的全局常量，区分开发模式与生产模式进行不同的操作时非常有用。
         config.plugins.push(new webpack.DefinePlugin({
-            APP_VERSION: `${pkg.version || '0.0.0'}`,
+            APP_VERSION: `${JSON.stringify(pkg.version) || '0.0.0'}`,
             NODE_ENV: JSON.stringify(res.ENV || process.env.NODE_ENV )
         }));
 

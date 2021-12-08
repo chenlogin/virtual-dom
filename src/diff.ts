@@ -1,6 +1,9 @@
-const diff = (oldNode,newNode)=>{
+import { newElement } from './element';
+
+export function diff(oldNode,newNode){
     let difference = {} //用来保存两个节点之间的差异
     getDiff(oldNode,newNode,0,difference)
+    console.log(difference)
     return difference
 }
 const REMOVE = 'remove'
@@ -23,7 +26,7 @@ const getDiff = (oldNode,newNode,index,difference)=>{
                 value: newNode,
                 type: MODIFY_TEXT
             })
-        } //如果节点类型相同则则继续比较属性是否相同
+        } //如果节点类型相同则继续比较属性是否相同
     }else if(oldNode.tagName === newNode.tagName){
         let storeAttrs = {}
         for(let  key in oldNode.attrs){ 
@@ -69,20 +72,18 @@ const getDiff = (oldNode,newNode,index,difference)=>{
     }
 }
 
-
-const fixPlace = (node,difference)=>{
+export function fixPlace(node,difference){
     let pacer = { index: 0 }
     pace(node,pacer,difference)
 }
-/*
-接收一个真实DOM（需要更新节点）,接收diff过后的最小差异集合
+/**
+ * 接收一个真实DOM（需要更新节点）,接收diff过后的最小差异集合
+ * pace函数会自身进行递归，对当前节点的差异用dofix进行更新
 */
-
 const pace = (node,pacer,difference) =>{
     
     let currentDifference = difference[pacer.index]
     let childNodes = node.childNodes
-    console.log(difference)
     childNodes.forEach((child)=>{
         pacer.index ++
         pace(child,pacer,difference)
@@ -102,8 +103,7 @@ const doFix = (node,difference) =>{
                      return 
                      const value = attrs[key]
                      if(value){
-                         SetVdToDom(node,key,value)
-                         
+                        newElement('', {}, []).setVdToDom(node,key,value)   
                      }else{
                          node.removeAttribute(key)
                      }
@@ -113,8 +113,8 @@ const doFix = (node,difference) =>{
                      node.textContent = item.value
                      break
                 case 'replace': 
-                   let newNode = (item.newNode instanceof Element) ? item.newNode.render(item.newNode) : 
-                   document.createTextNode(item.newNode)
+                    let newNode = (item.newNode instanceof Element) ? item.newNode.render(item.newNode) : 
+                    document.createTextNode(item.newNode)
                     node.parentNode.replaceChild(newNode,node)
                     break
                 case 'remove' :

@@ -4,6 +4,11 @@ interface Attrs {
     style?: string;
 }
 
+/** 
+ * tagName对应真实的标签类型
+ * attrs表示节点上的所有属性
+ * child表示该节点的孩子节点
+*/
 export class Element{
     tagName: string;
     attrs: Attrs;
@@ -24,7 +29,7 @@ export class Element{
             let childEle  = child instanceof Element ? child.render() : document.createTextNode(child);
             ele.appendChild(childEle);
         })
-     return ele;  
+        return ele;  
     }
 
     setVdToDom(node,key,value){
@@ -46,4 +51,9 @@ export class Element{
                 break;
         }
     }
+}
+
+//创建函数对象
+export function newElement(tag,attr,child){
+    return new Element(tag,attr,child)
 }
